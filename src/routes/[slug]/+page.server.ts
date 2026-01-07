@@ -1,43 +1,20 @@
-import { getBlogBySlug } from "$lib/data/blogs";
+import { fetchBlog } from "$lib/github";
 import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = async ({ params, fetch }) => {
-  // Special case for test-blog: fetch external markdown
-  if (params.slug === "test-blog") {
-    try {
-      const response = await fetch(
-        "https://raw.githubusercontent.com/Raphire/Win11Debloat/refs/heads/master/README.md",
-      );
-      if (!response.ok) {
-        throw error(404, "Could not fetch README");
-      }
-      const content = await response.text();
+export const load: PageServerLoad = async ({ params, fetch, setHeaders }) => {
+  // Set CDN cache headers (10 minutes)
+  setHeaders({
+    "cache-control": "public, max-age=600, s-maxage=600",
+  });
 
-      return {
-        blog: {
-          slug: "test-blog",
-          title: "Win11Debloat",
-          excerpt:
-            "A PowerShell script to remove bloatware and improve Windows 11/10",
-          content: content,
-          date: "2026-01-07",
-          category: "Documentation",
-          author: "Raphire",
-          readTime: 10,
-          isExternalMarkdown: true,
-        },
-      };
-    } catch (e) {
-      throw error(500, "Failed to fetch external markdown");
+  try {
+    const blog = await fetchBlog(params.slug, fetch);
+    return { blog };
+  } catch (e) {
+    if (e instanceof Error && e.message === "Blog post not found") {
+      throw error(404, "Blog post not found");
     }
+    throw error(500, "Failed to fetch blog post");
   }
-
-  const blog = getBlogBySlug(params.slug);
-
-  if (!blog) {
-    throw error(404, "Blog post not found");
-  }
-
-  return { blog };
 };

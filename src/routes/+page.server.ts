@@ -1,7 +1,12 @@
-import { getAllBlogs } from '$lib/data/blogs';
-import type { PageServerLoad } from './$types';
+import { fetchPublicBlogs } from "$lib/github";
+import type { PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = async () => {
-	const blogs = getAllBlogs();
-	return { blogs };
+export const load: PageServerLoad = async ({ fetch, setHeaders }) => {
+  // Set CDN cache headers (5 minutes)
+  setHeaders({
+    "cache-control": "public, max-age=300, s-maxage=300",
+  });
+
+  const blogs = await fetchPublicBlogs(fetch);
+  return { blogs };
 };

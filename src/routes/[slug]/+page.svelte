@@ -13,56 +13,13 @@
             .toUpperCase();
     }
 
-    function renderSimpleMarkdown(content: string): string {
-        return content
-            .split("\n\n")
-            .map((block) => {
-                block = block.trim();
-                if (!block) return "";
-
-                if (block.startsWith("## ")) {
-                    return `<h2 class="text-xl font-semibold mt-10 mb-4" style="font-family: var(--font-serif);">${block.slice(3)}</h2>`;
-                }
-                if (block.startsWith("# ")) {
-                    return `<h1 class="text-2xl font-semibold mt-10 mb-4" style="font-family: var(--font-serif);">${block.slice(2)}</h1>`;
-                }
-                if (block.startsWith("> ")) {
-                    const lines = block
-                        .split("\n")
-                        .map((l) => l.replace(/^> ?/, ""))
-                        .join("<br>");
-                    return `<blockquote class="border-l-2 border-muted pl-4 my-6 italic text-muted">${lines}</blockquote>`;
-                }
-                if (block === "---") {
-                    return '<hr class="my-8 border-border">';
-                }
-
-                let html = block
-                    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-                    .replace(/\*(.+?)\*/g, "<em>$1</em>")
-                    .replace(
-                        /`(.+?)`/g,
-                        '<code class="bg-border px-1.5 py-0.5 text-sm rounded font-sans">$1</code>',
-                    );
-
-                return `<p class="my-5 leading-relaxed">${html}</p>`;
-            })
-            .join("\n");
-    }
-
-    function renderFullMarkdown(content: string): string {
+    function renderMarkdown(content: string): string {
         marked.setOptions({
             gfm: true,
             breaks: true,
         });
         return marked.parse(content) as string;
     }
-
-    $effect(() => {
-        if (data.blog.isExternalMarkdown) {
-            // Add syntax highlighting styles dynamically if needed
-        }
-    });
 </script>
 
 <svelte:head>
@@ -116,15 +73,9 @@
         </div>
     </header>
 
-    {#if data.blog.isExternalMarkdown}
-        <div class="markdown-content">
-            {@html renderFullMarkdown(data.blog.content)}
-        </div>
-    {:else}
-        <div class="prose" style="font-family: var(--font-serif);">
-            {@html renderSimpleMarkdown(data.blog.content)}
-        </div>
-    {/if}
+    <div class="markdown-content">
+        {@html renderMarkdown(data.blog.content)}
+    </div>
 </article>
 
 <style>
