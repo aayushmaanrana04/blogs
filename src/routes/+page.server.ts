@@ -1,0 +1,7 @@
+import { getAllBlogs } from '$lib/data/blogs';
+import type { PageServerLoad } from './$types';
+
+export const load: PageServerLoad = async () => {
+	const blogs = getAllBlogs();
+	return { blogs };
+};
