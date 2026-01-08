@@ -60,8 +60,8 @@
         </div>
 
         <h1
-            class="text-3xl font-semibold m-0 mb-4 leading-tight"
-            style="font-family: var(--font-serif);"
+            class="text-4xl font-semibold m-0 mb-4 leading-tight"
+            style="font-family: var(--font-sans);"
         >
             {data.blog.title}
         </h1>
@@ -80,41 +80,42 @@
 
 <style>
     .markdown-content :global(h1) {
-        font-size: 1.75rem;
+        font-size: 2rem;
         font-weight: 600;
         margin-top: 2rem;
         margin-bottom: 1rem;
-        font-family: var(--font-serif);
+        font-family: var(--font-sans);
     }
 
     .markdown-content :global(h2) {
-        font-size: 1.5rem;
+        font-size: 1.75rem;
         font-weight: 600;
         margin-top: 2rem;
         margin-bottom: 0.75rem;
-        font-family: var(--font-serif);
+        font-family: var(--font-sans);
     }
 
     .markdown-content :global(h3) {
-        font-size: 1.25rem;
+        font-size: 1.5rem;
         font-weight: 600;
         margin-top: 1.5rem;
         margin-bottom: 0.5rem;
-        font-family: var(--font-serif);
+        font-family: var(--font-sans);
     }
 
     .markdown-content :global(h4) {
-        font-size: 1.1rem;
+        font-size: 1.25rem;
         font-weight: 600;
         margin-top: 1.25rem;
         margin-bottom: 0.5rem;
-        font-family: var(--font-serif);
+        font-family: var(--font-sans);
     }
 
     .markdown-content :global(p) {
         margin: 1rem 0;
-        line-height: 1.7;
+        line-height: 1.8;
         font-family: var(--font-serif);
+        font-size: 1.125rem;
     }
 
     .markdown-content :global(a) {
@@ -139,11 +140,12 @@
         margin: 1rem 0;
         padding-left: 1.5rem;
         font-family: var(--font-serif);
+        font-size: 1.125rem;
     }
 
     .markdown-content :global(li) {
         margin: 0.5rem 0;
-        line-height: 1.6;
+        line-height: 1.8;
     }
 
     .markdown-content :global(code) {

@@ -29,8 +29,8 @@
                 </div>
 
                 <h2
-                    class="text-2xl font-semibold m-0 mb-3 leading-tight"
-                    style="font-family: var(--font-serif);"
+                    class="text-3xl font-semibold m-0 mb-3 leading-tight"
+                    style="font-family: var(--font-sans);"
                 >
                     {blog.title}
                 </h2>
