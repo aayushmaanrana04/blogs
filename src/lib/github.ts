@@ -3,9 +3,12 @@ import {
   GITHUB_REPO_NAME,
   GITHUB_BRANCH,
   GITHUB_CONTENT_PATH,
+  GITHUB_TOKEN,
 } from "$env/static/private";
+import { getCached, setCache } from "./cache";
 
 const CONTENT_PATH = GITHUB_CONTENT_PATH || "";
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 export interface BlogFrontmatter {
   title: string;
@@ -20,6 +23,10 @@ export interface BlogFrontmatter {
 export interface Blog extends BlogFrontmatter {
   slug: string;
   content: string;
+}
+
+export interface BlogSummary extends BlogFrontmatter {
+  slug: string;
 }
 
 interface GitHubFile {
@@ -101,12 +108,20 @@ function getApiUrl(): string {
 export async function fetchBlogList(
   fetch: typeof globalThis.fetch,
 ): Promise<GitHubFile[]> {
-  const response = await fetch(getApiUrl(), {
-    headers: {
-      Accept: "application/vnd.github.v3+json",
-      "User-Agent": "SvelteKit-Blog",
-    },
-  });
+  const cacheKey = "blog-list";
+  const cached = getCached<GitHubFile[]>(cacheKey);
+  if (cached) return cached;
+
+  const headers: Record<string, string> = {
+    Accept: "application/vnd.github.v3+json",
+    "User-Agent": "SvelteKit-Blog",
+  };
+
+  if (GITHUB_TOKEN) {
+    headers["Authorization"] = `token ${GITHUB_TOKEN}`;
+  }
+
+  const response = await fetch(getApiUrl(), { headers });
 
   if (!response.ok) {
     throw new Error(
@@ -117,9 +132,12 @@ export async function fetchBlogList(
   const files: GitHubFile[] = await response.json();
 
   // Filter to only .md files
-  return files.filter(
+  const mdFiles = files.filter(
     (file) => file.type === "file" && file.name.endsWith(".md"),
   );
+
+  setCache(cacheKey, mdFiles, CACHE_TTL);
+  return mdFiles;
 }
 
 /**
@@ -129,6 +147,10 @@ export async function fetchBlogContent(
   slug: string,
   fetch: typeof globalThis.fetch,
 ): Promise<string> {
+  const cacheKey = `blog-content:${slug}`;
+  const cached = getCached<string>(cacheKey);
+  if (cached) return cached;
+
   const url = getRawUrl(slug);
   const response = await fetch(url);
 
@@ -139,7 +161,9 @@ export async function fetchBlogContent(
     throw new Error(`Failed to fetch blog content: ${response.status}`);
   }
 
-  return response.text();
+  const content = await response.text();
+  setCache(cacheKey, content, CACHE_TTL);
+  return content;
 }
 
 /**
@@ -160,44 +184,49 @@ export async function fetchBlog(
 }
 
 /**
- * Fetch all blogs with their frontmatter (for homepage)
+ * Fetch all blog summaries (frontmatter only, no content) for homepage
  */
-export async function fetchAllBlogs(
+export async function fetchAllBlogSummaries(
   fetch: typeof globalThis.fetch,
-): Promise<Blog[]> {
+): Promise<BlogSummary[]> {
+  const cacheKey = "blog-summaries";
+  const cached = getCached<BlogSummary[]>(cacheKey);
+  if (cached) return cached;
+
   const files = await fetchBlogList(fetch);
 
-  const blogs: Blog[] = [];
+  const summaries: BlogSummary[] = [];
 
   for (const file of files) {
     try {
       const slug = file.name.replace(".md", "");
       const markdown = await fetchBlogContent(slug, fetch);
-      const { frontmatter, content } = parseFrontmatter(markdown);
+      const { frontmatter } = parseFrontmatter(markdown);
 
-      blogs.push({
+      summaries.push({
         slug,
         ...frontmatter,
-        content,
       });
     } catch (error) {
-      // Skip files with invalid frontmatter
       console.warn(`Skipping ${file.name}: ${error}`);
     }
   }
 
   // Sort by date descending
-  return blogs.sort(
+  const sorted = summaries.sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
   );
+
+  setCache(cacheKey, sorted, CACHE_TTL);
+  return sorted;
 }
 
 /**
- * Fetch all public blogs (for homepage display)
+ * Fetch all public blog summaries (for homepage display)
  */
-export async function fetchPublicBlogs(
+export async function fetchPublicBlogSummaries(
   fetch: typeof globalThis.fetch,
-): Promise<Blog[]> {
-  const allBlogs = await fetchAllBlogs(fetch);
-  return allBlogs.filter((blog) => blog.public === true);
+): Promise<BlogSummary[]> {
+  const summaries = await fetchAllBlogSummaries(fetch);
+  return summaries.filter((blog) => blog.public === true);
 }

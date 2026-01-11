@@ -1,4 +1,4 @@
-import { fetchPublicBlogs } from "$lib/github";
+import { fetchPublicBlogSummaries } from "$lib/github";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ fetch, setHeaders }) => {
@@ -7,6 +7,6 @@ export const load: PageServerLoad = async ({ fetch, setHeaders }) => {
     "cache-control": "public, max-age=300, s-maxage=300",
   });
 
-  const blogs = await fetchPublicBlogs(fetch);
+  const blogs = await fetchPublicBlogSummaries(fetch);
   return { blogs };
 };
