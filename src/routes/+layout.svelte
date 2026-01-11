@@ -71,9 +71,14 @@
     class="sm:h-[calc(100dvh-2.5rem)] h-[calc(100dvh-1rem)] flex flex-col bg-card-bg text-text sm:m-5 m-2 rounded-xl overflow-hidden"
 >
     <header class="w-full px-6 border-b border-double flex-shrink-0">
-        <div class="max-w-2xl mx-auto py-6 flex justify-between items-start">
+        <div
+            class="max-w-2xl mx-auto py-6 flex justify-between items-start relative"
+        >
+            <div class="absolute -left-22 flex justify-center items-center">
+                <img src="/logo.png" alt="Logo" class="w-18" />
+            </div>
             <div>
-                <a href="/" class="block">
+                <a href="/" class="flex items-center gap-3">
                     <h1
                         class="text-2xl font-bold tracking-tight m-0 font-sans"
                         style="letter-spacing: 0.02em;"
@@ -82,16 +87,16 @@
                     </h1>
                 </a>
                 <p
-                    class="text-sm text-muted m-0 mt-1"
+                    class="text-sm text-muted m-0 mt-1 max-w-xs"
                     style="font-family: var(--font-serif); font-style: italic;"
                 >
-                    work in progress
+                    can we talk about the political and economic state of the
+                    world right now
                 </p>
             </div>
-            <div class="text-right flex items-center gap-8">
-                <span class="text-xs font-sans text-muted tracking-wide"
-                    >{formatCurrentDate()}</span
-                >
+            <div
+                class="text-right flex flex-col items-end justify-center gap-2"
+            >
                 <button
                     class="theme-toggle"
                     onclick={toggleTheme}
@@ -131,6 +136,9 @@
                         </svg>
                     {/if}
                 </button>
+                <span class="text-xs font-sans text-muted tracking-wide"
+                    >{formatCurrentDate()}</span
+                >
             </div>
         </div>
     </header>
