@@ -68,34 +68,43 @@
 </svelte:head>
 
 <div
-    class="sm:h-[calc(100dvh-2.5rem)] h-[calc(100dvh-1rem)] flex flex-col bg-card-bg text-text sm:m-5 m-2 rounded-xl overflow-hidden"
+    class="min-h-[calc(100dvh-1rem)] sm:min-h-[calc(100dvh-2.5rem)] flex flex-col bg-card-bg text-text m-2 sm:m-5 rounded-xl overflow-hidden"
 >
-    <header class="w-full px-6 border-b border-double flex-shrink-0">
+    <header class="w-full px-4 sm:px-6 border-b border-double flex-shrink-0">
         <div
-            class="max-w-2xl mx-auto py-6 flex justify-between items-start relative"
+            class="max-w-2xl mx-auto py-4 sm:py-6 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 sm:gap-0 relative"
         >
-            <div class="absolute -left-22 flex justify-center items-center">
+            <!-- Logo - hidden on mobile, shown on larger screens -->
+            <div
+                class="hidden lg:flex absolute -left-22 justify-center items-center"
+            >
                 <img src="/logo.png" alt="Logo" class="w-18" />
             </div>
-            <div>
-                <a href="/" class="flex items-center gap-3">
-                    <h1
-                        class="text-2xl font-bold tracking-tight m-0 font-sans"
-                        style="letter-spacing: 0.02em;"
-                    >
-                        -fragment(s)
-                    </h1>
-                </a>
+
+            <!-- Title and tagline section -->
+            <div class="flex-1">
+                <div class="flex items-center gap-3">
+                    <a href="/">
+                        <h1
+                            class="text-xl sm:text-2xl font-bold tracking-tight m-0 font-sans"
+                            style="letter-spacing: 0.02em;"
+                        >
+                            -fragment(s)
+                        </h1>
+                    </a>
+                </div>
                 <p
-                    class="text-sm text-muted m-0 mt-1 max-w-xs"
+                    class="text-xs sm:text-sm text-muted m-0 mt-1 max-w-xs"
                     style="font-family: var(--font-serif); font-style: italic;"
                 >
                     can we talk about the political and economic state of the
                     world right now
                 </p>
             </div>
+
+            <!-- Date and theme toggle - desktop only -->
             <div
-                class="text-right flex flex-col items-end justify-center gap-2"
+                class="hidden sm:flex text-right flex-col items-end justify-center gap-2"
             >
                 <button
                     class="theme-toggle"
@@ -105,7 +114,6 @@
                         : "Switch to dark mode"}
                 >
                     {#if isDark}
-                        <!-- Sun icon for dark mode -->
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
@@ -120,7 +128,6 @@
                             />
                         </svg>
                     {:else}
-                        <!-- Moon icon for light mode -->
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
@@ -143,8 +150,8 @@
         </div>
     </header>
 
-    <main class="flex-1 w-full px-6 overflow-y-auto">
-        <div class="max-w-2xl mx-auto py-8">
+    <main class="flex-1 w-full px-4 sm:px-6 overflow-y-auto">
+        <div class="max-w-2xl mx-auto py-6 sm:py-8">
             {@render children()}
         </div>
     </main>
