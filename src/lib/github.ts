@@ -103,6 +103,13 @@ function getApiUrl(): string {
 }
 
 /**
+ * Get raw URL for blog.json metadata file
+ */
+function getBlogJsonUrl(): string {
+  return `https://raw.githubusercontent.com/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/${GITHUB_BRANCH}/blog.json`;
+}
+
+/**
  * Fetch list of all .md files from the repository root
  */
 export async function fetchBlogList(
@@ -183,8 +190,20 @@ export async function fetchBlog(
   };
 }
 
+interface BlogJsonEntry {
+  filename: string;
+  path: string;
+  title: string;
+  excerpt: string;
+  date: string;
+  category: string;
+  author: string;
+  readTime: number;
+  public: boolean;
+}
+
 /**
- * Fetch all blog summaries (frontmatter only, no content) for homepage
+ * Fetch all blog summaries from blog.json (single request)
  */
 export async function fetchAllBlogSummaries(
   fetch: typeof globalThis.fetch,
@@ -193,24 +212,24 @@ export async function fetchAllBlogSummaries(
   const cached = getCached<BlogSummary[]>(cacheKey);
   if (cached) return cached;
 
-  const files = await fetchBlogList(fetch);
+  const response = await fetch(getBlogJsonUrl());
 
-  const summaries: BlogSummary[] = [];
-
-  for (const file of files) {
-    try {
-      const slug = file.name.replace(".md", "");
-      const markdown = await fetchBlogContent(slug, fetch);
-      const { frontmatter } = parseFrontmatter(markdown);
-
-      summaries.push({
-        slug,
-        ...frontmatter,
-      });
-    } catch (error) {
-      console.warn(`Skipping ${file.name}: ${error}`);
-    }
+  if (!response.ok) {
+    throw new Error(`Failed to fetch blog.json: ${response.status}`);
   }
+
+  const data: { blogs: BlogJsonEntry[] } = await response.json();
+
+  const summaries: BlogSummary[] = data.blogs.map((entry) => ({
+    slug: entry.filename,
+    title: entry.title,
+    excerpt: entry.excerpt,
+    date: entry.date,
+    category: entry.category,
+    author: entry.author,
+    readTime: entry.readTime,
+    public: entry.public,
+  }));
 
   // Sort by date descending
   const sorted = summaries.sort(
