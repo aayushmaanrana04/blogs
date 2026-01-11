@@ -12,10 +12,6 @@
     }
 </script>
 
-<svelte:head>
-    <title>The Chronicle</title>
-</svelte:head>
-
 <section>
     {#each data.blogs as blog}
         <article class="py-6 sm:py-8 border-b border-border">
@@ -23,9 +19,12 @@
                 <div class="article-meta mb-2 sm:mb-3 flex-wrap">
                     <span class="category-tag">{blog.category}</span>
                     <span class="separator hidden sm:inline">·</span>
-                    <span class="hidden sm:inline">{formatDate(blog.date)}</span>
+                    <span class="hidden sm:inline">{formatDate(blog.date)}</span
+                    >
                     <span class="separator hidden sm:inline">·</span>
-                    <span class="hidden sm:inline">{blog.readTime} MIN READ</span>
+                    <span class="hidden sm:inline"
+                        >{blog.readTime} MIN READ</span
+                    >
                 </div>
 
                 <h2
@@ -48,7 +47,9 @@
                     <span class="border-l-2 border-muted pl-3"
                         >BY {blog.author.toUpperCase()}</span
                     >
-                    <span class="sm:hidden text-muted">· {formatDate(blog.date)}</span>
+                    <span class="sm:hidden text-muted"
+                        >· {formatDate(blog.date)}</span
+                    >
                 </div>
             </a>
         </article>

@@ -22,10 +22,6 @@
     }
 </script>
 
-<svelte:head>
-    <title>{data.blog.title} - The Chronicle</title>
-</svelte:head>
-
 <article>
     <nav class="mb-6 sm:mb-8">
         <a
@@ -66,11 +62,15 @@
             {data.blog.title}
         </h1>
 
-        <div class="text-xs sm:text-sm text-muted font-sans flex flex-wrap items-center gap-2 sm:gap-0">
+        <div
+            class="text-xs sm:text-sm text-muted font-sans flex flex-wrap items-center gap-2 sm:gap-0"
+        >
             <span class="border-l-2 border-muted pl-3"
                 >BY {data.blog.author.toUpperCase()}</span
             >
-            <span class="sm:hidden text-muted">· {formatDate(data.blog.date)} · {data.blog.readTime} MIN READ</span>
+            <span class="sm:hidden text-muted"
+                >· {formatDate(data.blog.date)} · {data.blog.readTime} MIN READ</span
+            >
         </div>
     </header>
 

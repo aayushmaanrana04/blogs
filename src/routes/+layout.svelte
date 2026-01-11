@@ -70,7 +70,9 @@
 <div
     class="min-h-[calc(100dvh-1rem)] sm:min-h-[calc(100dvh-2.5rem)] flex flex-col bg-card-bg text-text m-2 sm:m-5 rounded-xl overflow-hidden"
 >
-    <header class="w-full px-4 sm:px-6 border-b border-double flex-shrink-0">
+    <header
+        class="w-full px-4 sm:px-6 border-b border-bg border-double flex-shrink-0"
+    >
         <div
             class="max-w-2xl mx-auto py-4 sm:py-6 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 sm:gap-0 relative"
         >
