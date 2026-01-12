@@ -15,11 +15,25 @@
     }
 
     function renderMarkdown(content: string): string {
+        const renderer = new marked.Renderer();
+
+        renderer.link = function ({ href, title, tokens }) {
+            const text = this.parser.parseInline(tokens);
+            const titleAttr = title ? ` title="${title}"` : "";
+
+            // External links (start with http:// or https://)
+            if (href && (href.startsWith("http://") || href.startsWith("https://"))) {
+                return `<a href="${href}"${titleAttr} target="_blank" rel="noopener noreferrer">${text}</a>`;
+            }
+            return `<a href="${href}"${titleAttr}>${text}</a>`;
+        };
+
         marked.setOptions({
             gfm: true,
             breaks: true,
         });
-        return marked.parse(content) as string;
+
+        return marked.parse(content, { renderer }) as string;
     }
 </script>
 
