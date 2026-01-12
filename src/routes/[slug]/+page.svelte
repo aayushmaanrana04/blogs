@@ -1,5 +1,6 @@
 <script lang="ts">
     import { marked } from "marked";
+    import Comments from "$lib/components/Comments.svelte";
 
     let { data } = $props();
 
@@ -77,6 +78,8 @@
     <div class="markdown-content">
         {@html renderMarkdown(data.blog.content)}
     </div>
+
+    <Comments repo={data.commentsRepo} />
 </article>
 
 <style>
