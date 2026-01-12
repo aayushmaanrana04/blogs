@@ -20,13 +20,31 @@ export interface BlogFrontmatter {
   public: boolean;
 }
 
+/**
+ * Convert a string to a URL-safe slug
+ * - Converts spaces to hyphens
+ * - Removes special characters
+ * - Converts to lowercase
+ */
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-") // Replace spaces with hyphens
+    .replace(/[^a-z0-9-]/g, "") // Remove special characters except hyphens
+    .replace(/-+/g, "-") // Replace multiple hyphens with single hyphen
+    .replace(/^-|-$/g, ""); // Remove leading/trailing hyphens
+}
+
 export interface Blog extends BlogFrontmatter {
   slug: string;
+  filename: string;
   content: string;
 }
 
 export interface BlogSummary extends BlogFrontmatter {
   slug: string;
+  filename: string;
 }
 
 interface GitHubFile {
@@ -174,17 +192,35 @@ export async function fetchBlogContent(
 }
 
 /**
+ * Find a blog summary by its URL-safe slug
+ */
+export async function findBlogBySlug(
+  slug: string,
+  fetch: typeof globalThis.fetch,
+): Promise<BlogSummary | null> {
+  const summaries = await fetchAllBlogSummaries(fetch);
+  return summaries.find((s) => s.slug === slug) || null;
+}
+
+/**
  * Fetch a single blog post by slug
  */
 export async function fetchBlog(
   slug: string,
   fetch: typeof globalThis.fetch,
 ): Promise<Blog> {
-  const markdown = await fetchBlogContent(slug, fetch);
+  // Look up the original filename from the slug
+  const summary = await findBlogBySlug(slug, fetch);
+  if (!summary) {
+    throw new Error("Blog post not found");
+  }
+
+  const markdown = await fetchBlogContent(summary.filename, fetch);
   const { frontmatter, content } = parseFrontmatter(markdown);
 
   return {
     slug,
+    filename: summary.filename,
     ...frontmatter,
     content,
   };
@@ -221,7 +257,8 @@ export async function fetchAllBlogSummaries(
   const data: { blogs: BlogJsonEntry[] } = await response.json();
 
   const summaries: BlogSummary[] = data.blogs.map((entry) => ({
-    slug: entry.filename,
+    slug: slugify(entry.filename),
+    filename: entry.filename,
     title: entry.title,
     excerpt: entry.excerpt,
     date: entry.date,
