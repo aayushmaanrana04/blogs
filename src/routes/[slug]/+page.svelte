@@ -78,7 +78,7 @@
     <meta property="og:description" content={data.blog.excerpt} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:site_name" content={siteTitle} />
-    <meta property="og:image" content={`${$page.url.origin}/bojack.webp`} />
+    <meta property="og:image" content={`${$page.url.origin}/bojack.png`} />
     <meta property="article:published_time" content={formatISODate(data.blog.date)} />
     <meta property="article:author" content={data.blog.author} />
     <meta property="article:section" content={data.blog.category} />
@@ -87,7 +87,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={data.blog.title} />
     <meta name="twitter:description" content={data.blog.excerpt} />
-    <meta name="twitter:image" content={`${$page.url.origin}/bojack.webp`} />
+    <meta name="twitter:image" content={`${$page.url.origin}/bojack.png`} />
 
     <!-- JSON-LD Structured Data -->
     {@html `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`}
