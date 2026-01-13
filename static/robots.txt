@@ -1,6 +1,22 @@
-# allow crawling everything by default
+# Allow crawling everything by default
 User-agent: *
 Disallow:
+
+# Block AI training crawlers
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
 
 # Sitemap location
 Sitemap: https://fragments.pattahgobhi.in/sitemap.xml
