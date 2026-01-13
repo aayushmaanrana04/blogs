@@ -16,6 +16,32 @@
     const siteTitle = "Fragments";
     const siteDescription =
         "It gets easier. Every day it gets a little easier. But you gotta do it every day — that's the hard part.";
+
+    // WebSite schema for homepage
+    let websiteSchema = $derived({
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": siteTitle,
+        "description": siteDescription,
+        "url": $page.url.origin
+    });
+
+    // Blog schema listing
+    let blogSchema = $derived({
+        "@context": "https://schema.org",
+        "@type": "Blog",
+        "name": siteTitle,
+        "description": siteDescription,
+        "url": $page.url.href,
+        "blogPost": data.blogs.map(blog => ({
+            "@type": "BlogPosting",
+            "headline": blog.title,
+            "description": blog.excerpt,
+            "author": { "@type": "Person", "name": blog.author },
+            "datePublished": new Date(blog.date).toISOString(),
+            "url": `${$page.url.origin}/${blog.slug}`
+        }))
+    });
 </script>
 
 <svelte:head>
@@ -29,13 +55,20 @@
     <meta property="og:description" content={siteDescription} />
     <meta property="og:url" content={$page.url.href} />
     <meta property="og:site_name" content={siteTitle} />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:image" content={`${$page.url.origin}/bojack.webp`} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={siteTitle} />
     <meta name="twitter:description" content={siteDescription} />
     <meta name="twitter:image" content={`${$page.url.origin}/bojack.webp`} />
+
+    <!-- JSON-LD Structured Data -->
+    {@html `<script type="application/ld+json">${JSON.stringify(websiteSchema)}</script>`}
+    {@html `<script type="application/ld+json">${JSON.stringify(blogSchema)}</script>`}
 </svelte:head>
 
 <section>

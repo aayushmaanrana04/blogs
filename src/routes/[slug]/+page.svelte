@@ -44,6 +44,7 @@
     const siteTitle = "Fragments";
     let pageTitle = $derived(`${data.blog.title} | ${siteTitle}`);
     let canonicalUrl = $derived($page.url.href);
+    let siteOrigin = $derived($page.url.origin);
 
     // JSON-LD structured data for the article
     let jsonLd = $derived({
@@ -62,14 +63,50 @@
         },
         "publisher": {
             "@type": "Organization",
-            "name": siteTitle
-        }
+            "name": siteTitle,
+            "logo": {
+                "@type": "ImageObject",
+                "url": `${siteOrigin}/logo.png`
+            }
+        },
+        "image": `${siteOrigin}/bojack.png`,
+        "articleSection": data.blog.category,
+        "wordCount": data.blog.content.split(/\s+/).length,
+        "timeRequired": `PT${data.blog.readTime}M`
+    });
+
+    // BreadcrumbList schema
+    let breadcrumbSchema = $derived({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": siteOrigin
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": data.blog.category,
+                "item": `${siteOrigin}/?category=${encodeURIComponent(data.blog.category)}`
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": data.blog.title,
+                "item": canonicalUrl
+            }
+        ]
     });
 </script>
 
 <svelte:head>
     <title>{pageTitle}</title>
     <meta name="description" content={data.blog.excerpt} />
+    <meta name="keywords" content={`${data.blog.category}, blog, ${siteTitle}`} />
+    <meta name="author" content={data.blog.author} />
     <link rel="canonical" href={canonicalUrl} />
 
     <!-- Open Graph -->
@@ -78,19 +115,28 @@
     <meta property="og:description" content={data.blog.excerpt} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:site_name" content={siteTitle} />
-    <meta property="og:image" content={`${$page.url.origin}/bojack.png`} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image" content={`${siteOrigin}/bojack.png`} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="article:published_time" content={formatISODate(data.blog.date)} />
     <meta property="article:author" content={data.blog.author} />
     <meta property="article:section" content={data.blog.category} />
+    <meta property="article:tag" content={data.blog.category} />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={data.blog.title} />
     <meta name="twitter:description" content={data.blog.excerpt} />
-    <meta name="twitter:image" content={`${$page.url.origin}/bojack.png`} />
+    <meta name="twitter:image" content={`${siteOrigin}/bojack.png`} />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content={data.blog.author} />
+    <meta name="twitter:label2" content="Reading time" />
+    <meta name="twitter:data2" content={`${data.blog.readTime} min read`} />
 
     <!-- JSON-LD Structured Data -->
     {@html `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`}
+    {@html `<script type="application/ld+json">${JSON.stringify(breadcrumbSchema)}</script>`}
 </svelte:head>
 
 <article>
