@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { page } from "$app/stores";
+
     let { data } = $props();
 
     function formatDate(dateStr: string): string {
@@ -10,7 +12,31 @@
             })
             .toUpperCase();
     }
+
+    const siteTitle = "Fragments";
+    const siteDescription =
+        "It gets easier. Every day it gets a little easier. But you gotta do it every day — that's the hard part.";
 </script>
+
+<svelte:head>
+    <title>{siteTitle}</title>
+    <meta name="description" content={siteDescription} />
+    <link rel="canonical" href={$page.url.href} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={siteTitle} />
+    <meta property="og:description" content={siteDescription} />
+    <meta property="og:url" content={$page.url.href} />
+    <meta property="og:site_name" content={siteTitle} />
+    <meta property="og:image" content={`${$page.url.origin}/bojack.webp`} />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={siteTitle} />
+    <meta name="twitter:description" content={siteDescription} />
+    <meta name="twitter:image" content={`${$page.url.origin}/bojack.webp`} />
+</svelte:head>
 
 <section>
     {#each data.blogs as blog}

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { marked } from "marked";
+    import { page } from "$app/stores";
     import Comments from "$lib/components/Comments.svelte";
 
     let { data } = $props();
@@ -12,6 +13,10 @@
                 year: "numeric",
             })
             .toUpperCase();
+    }
+
+    function formatISODate(dateStr: string): string {
+        return new Date(dateStr).toISOString();
     }
 
     function renderMarkdown(content: string): string {
@@ -35,7 +40,58 @@
 
         return marked.parse(content, { renderer }) as string;
     }
+
+    const siteTitle = "Fragments";
+    let pageTitle = $derived(`${data.blog.title} | ${siteTitle}`);
+    let canonicalUrl = $derived($page.url.href);
+
+    // JSON-LD structured data for the article
+    let jsonLd = $derived({
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": data.blog.title,
+        "description": data.blog.excerpt,
+        "author": {
+            "@type": "Person",
+            "name": data.blog.author
+        },
+        "datePublished": formatISODate(data.blog.date),
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": canonicalUrl
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": siteTitle
+        }
+    });
 </script>
+
+<svelte:head>
+    <title>{pageTitle}</title>
+    <meta name="description" content={data.blog.excerpt} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content={data.blog.title} />
+    <meta property="og:description" content={data.blog.excerpt} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content={siteTitle} />
+    <meta property="og:image" content={`${$page.url.origin}/bojack.webp`} />
+    <meta property="article:published_time" content={formatISODate(data.blog.date)} />
+    <meta property="article:author" content={data.blog.author} />
+    <meta property="article:section" content={data.blog.category} />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={data.blog.title} />
+    <meta name="twitter:description" content={data.blog.excerpt} />
+    <meta name="twitter:image" content={`${$page.url.origin}/bojack.webp`} />
+
+    <!-- JSON-LD Structured Data -->
+    {@html `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`}
+</svelte:head>
 
 <article>
     <nav class="mb-6 sm:mb-8">

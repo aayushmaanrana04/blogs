@@ -63,9 +63,6 @@
     });
 </script>
 
-<svelte:head>
-    <title>Fragments</title>
-</svelte:head>
 
 <div
     class="min-h-[calc(100dvh-1rem)] sm:min-h-[calc(100dvh-2.5rem)] flex flex-col bg-card-bg text-text m-2 sm:m-5 rounded-xl overflow-hidden"
