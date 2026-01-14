@@ -24,6 +24,7 @@
 	},
 	"dependencies": {
 		"@sveltejs/adapter-node": "^5.4.0",
+		"date-fns": "^4.1.0",
 		"marked": "^17.0.1"
 	}
 }

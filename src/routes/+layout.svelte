@@ -1,6 +1,7 @@
 <script lang="ts">
     import "./layout.css";
     import { onMount } from "svelte";
+    import { page } from "$app/stores";
 
     let { children, data } = $props();
     let isDark = $state(false);
@@ -106,15 +107,8 @@
     }
 
     onMount(() => {
-        const savedTheme = localStorage.getItem("theme");
-        const prefersDark = window.matchMedia(
-            "(prefers-color-scheme: dark)",
-        ).matches;
-
-        if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-            isDark = true;
-            document.documentElement.classList.add("dark");
-        }
+        // Sync with the class that was set by the inline script in app.html
+        isDark = document.documentElement.classList.contains("dark");
     });
 </script>
 
@@ -185,6 +179,20 @@
                     can we talk about the political and economic state of the
                     world right now
                 </p>
+                <!-- Badges row -->
+                <div class="flex flex-wrap gap-2 mt-4 sm:mt-6">
+                    {#if !$page.url.pathname.startsWith('/what-percent')}
+                        <a
+                            href="/what-percent"
+                            class="nav-badge"
+                        >
+                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+                            what %?
+                        </a>
+                    {/if}
+                </div>
             </div>
 
             <!-- Right section - desktop only -->
