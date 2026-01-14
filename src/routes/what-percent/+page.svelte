@@ -1047,7 +1047,31 @@
     }
 
     .month-card.large {
-        padding: 1.25rem;
+        padding: 0.75rem;
+    }
+
+    .month-card.large .month-name {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .month-card.large .weekday {
+        font-size: 0.6rem;
+    }
+
+    .month-card.large .weekday-row {
+        gap: 0.25rem;
+        margin-bottom: 0.5rem;
+    }
+
+    @media (min-width: 500px) {
+        .month-card.large {
+            padding: 1.25rem;
+        }
+
+        .month-card.large .weekday {
+            font-size: 0.75rem;
+        }
     }
 
     .month-name {
@@ -1080,7 +1104,13 @@
     }
 
     .days-grid.large {
-        gap: 0.5rem;
+        gap: 0.25rem;
+    }
+
+    @media (min-width: 500px) {
+        .days-grid.large {
+            gap: 0.5rem;
+        }
     }
 
     .day-cell {
@@ -1146,8 +1176,15 @@
     }
 
     .day-cell.large {
-        min-height: 3rem;
-        font-size: 1rem;
+        min-height: 2rem;
+        font-size: 0.8rem;
+    }
+
+    @media (min-width: 500px) {
+        .day-cell.large {
+            min-height: 3rem;
+            font-size: 1rem;
+        }
     }
 
     .day-cell.empty {
