@@ -12,7 +12,6 @@
 		getDaysInMonthArray,
 		getDaysInWeek,
 		getDayStatus,
-		getZoomLevelLabel,
 		getDecadeRange,
 		getCenturyRange,
 		getYearsInDecade,
@@ -26,38 +25,47 @@
 		getHours,
 		getMinutes,
 		getDay,
-		startOfWeek,
-		endOfWeek,
-		isBefore,
 		startOfYear
 	} from '$lib/time-utils';
 
-	// Zoom levels: 0=Hours, 1=Day, 2=Week, 3=Month, 4=Year, 5=Decade, 6=Century
-	const MIN_ZOOM = 0;
-	const MAX_ZOOM = 6;
-	const DEFAULT_ZOOM = 4; // Year view
+	// Zoom level constants with type safety
+	const ZOOM_LEVEL = {
+		HOUR: 0,
+		DAY: 1,
+		WEEK: 2,
+		MONTH: 3,
+		YEAR: 4,
+		DECADE: 5,
+		CENTURY: 6
+	} as const;
 
-	const ZOOM_HASH_MAP: Record<number, string> = {
-		0: 'hour',
-		1: 'day',
-		2: 'week',
-		3: 'month',
-		4: 'year',
-		5: 'decade',
-		6: 'century'
+	type ZoomLevel = (typeof ZOOM_LEVEL)[keyof typeof ZOOM_LEVEL];
+
+	const MIN_ZOOM: ZoomLevel = ZOOM_LEVEL.HOUR;
+	const MAX_ZOOM: ZoomLevel = ZOOM_LEVEL.CENTURY;
+	const DEFAULT_ZOOM: ZoomLevel = ZOOM_LEVEL.YEAR;
+
+	const ZOOM_HASH_MAP: Record<ZoomLevel, string> = {
+		[ZOOM_LEVEL.HOUR]: 'hour',
+		[ZOOM_LEVEL.DAY]: 'day',
+		[ZOOM_LEVEL.WEEK]: 'week',
+		[ZOOM_LEVEL.MONTH]: 'month',
+		[ZOOM_LEVEL.YEAR]: 'year',
+		[ZOOM_LEVEL.DECADE]: 'decade',
+		[ZOOM_LEVEL.CENTURY]: 'century'
 	};
 
-	const HASH_ZOOM_MAP: Record<string, number> = {
-		'hour': 0,
-		'day': 1,
-		'week': 2,
-		'month': 3,
-		'year': 4,
-		'decade': 5,
-		'century': 6
+	const HASH_ZOOM_MAP: Record<string, ZoomLevel> = {
+		'hour': ZOOM_LEVEL.HOUR,
+		'day': ZOOM_LEVEL.DAY,
+		'week': ZOOM_LEVEL.WEEK,
+		'month': ZOOM_LEVEL.MONTH,
+		'year': ZOOM_LEVEL.YEAR,
+		'decade': ZOOM_LEVEL.DECADE,
+		'century': ZOOM_LEVEL.CENTURY
 	};
 
-	function getInitialZoom(): number {
+	function getInitialZoom(): ZoomLevel {
 		if (typeof window !== 'undefined') {
 			const hash = window.location.hash.slice(1).toLowerCase();
 			if (hash && HASH_ZOOM_MAP[hash] !== undefined) {
@@ -68,10 +76,10 @@
 	}
 
 	let now = $state(new Date());
-	let zoomLevel = $state(getInitialZoom());
+	let zoomLevel = $state<ZoomLevel>(getInitialZoom());
 	let isTransitioning = $state(false);
 
-	function updateHash(level: number) {
+	function updateHash(level: ZoomLevel) {
 		if (typeof window !== 'undefined') {
 			window.history.replaceState(null, '', `#${ZOOM_HASH_MAP[level]}`);
 		}
@@ -209,6 +217,7 @@
 	});
 
 	let intervalId: ReturnType<typeof setInterval>;
+	let transitionTimer: ReturnType<typeof setTimeout>;
 
 	onMount(() => {
 		intervalId = setInterval(() => {
@@ -220,23 +229,46 @@
 
 	onDestroy(() => {
 		if (intervalId) clearInterval(intervalId);
+		if (transitionTimer) clearTimeout(transitionTimer);
 	});
 
 	function zoomIn() {
 		if (zoomLevel > MIN_ZOOM && !isTransitioning) {
 			isTransitioning = true;
-			zoomLevel--;
+			zoomLevel = (zoomLevel - 1) as ZoomLevel;
 			updateHash(zoomLevel);
-			setTimeout(() => (isTransitioning = false), 300);
+			transitionTimer = setTimeout(() => (isTransitioning = false), 300);
 		}
 	}
 
 	function zoomOut() {
 		if (zoomLevel < MAX_ZOOM && !isTransitioning) {
 			isTransitioning = true;
-			zoomLevel++;
+			zoomLevel = (zoomLevel + 1) as ZoomLevel;
 			updateHash(zoomLevel);
-			setTimeout(() => (isTransitioning = false), 300);
+			transitionTimer = setTimeout(() => (isTransitioning = false), 300);
+		}
+	}
+
+	function handleKeydown(event: KeyboardEvent) {
+		// Ignore if user is typing in an input
+		if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+			return;
+		}
+
+		switch (event.key) {
+			case '+':
+			case '=':
+			case 'ArrowUp':
+				event.preventDefault();
+				zoomIn();
+				break;
+			case '-':
+			case '_':
+			case 'ArrowDown':
+				event.preventDefault();
+				zoomOut();
+				break;
 		}
 	}
 
@@ -266,6 +298,8 @@
 	<title>What Percent | Time Visualization</title>
 	<meta name="description" content="What percentage of time is over? A visual time lens." />
 </svelte:head>
+
+<svelte:window onkeydown={handleKeydown} />
 
 <div class="what-percent">
 	<!-- Stats Header Card -->
@@ -659,6 +693,12 @@
 	.zoom-btn:disabled {
 		opacity: 0.3;
 		cursor: not-allowed;
+	}
+
+	.zoom-btn:focus-visible {
+		outline: 2px solid var(--color-accent);
+		outline-offset: 2px;
+		border-radius: 0.25rem;
 	}
 
 	.zoom-btn .icon {
@@ -1191,6 +1231,37 @@
 
 		.quote-author {
 			font-size: 0.65rem;
+		}
+	}
+
+	/* Reduced motion support */
+	@media (prefers-reduced-motion: reduce) {
+		.view-container {
+			transition: none;
+		}
+
+		.progress-bar-fill,
+		.progress-fill,
+		.day-progress,
+		.hour-bar-fill {
+			transition: none;
+		}
+
+		.time-block {
+			transition: none;
+		}
+
+		.zoom-btn {
+			transition: none;
+		}
+
+		.week-day-card,
+		.hour-card {
+			transition: none;
+		}
+
+		.minute-cell.current {
+			animation: none;
 		}
 	}
 </style>

@@ -24,8 +24,7 @@ import {
 	format,
 	isLeapYear,
 	isSameDay,
-	isBefore,
-	isAfter
+	isBefore
 } from 'date-fns';
 
 /**
@@ -271,7 +270,6 @@ export {
 	isLeapYear,
 	isSameDay,
 	isBefore,
-	isAfter,
 	format,
 	startOfYear,
 	startOfWeek,
