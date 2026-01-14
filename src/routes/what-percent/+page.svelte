@@ -302,6 +302,14 @@
 <svelte:window onkeydown={handleKeydown} />
 
 <div class="what-percent">
+	<!-- Back Button -->
+	<a href="/" class="back-link">
+		<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="back-icon">
+			<path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+		</svg>
+		<span>Back to home</span>
+	</a>
+
 	<!-- Stats Header Card -->
 	<div class="stats-card">
 		<div class="stats-main">
@@ -540,9 +548,31 @@
 		padding: 0.5rem 0;
 	}
 
+	/* Back Link */
+	.back-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.875rem;
+		font-family: var(--font-sans);
+		color: var(--color-muted);
+		text-decoration: none;
+		transition: color 0.2s ease;
+		width: fit-content;
+	}
+
+	.back-link:hover {
+		color: var(--color-accent);
+	}
+
+	.back-icon {
+		width: 1rem;
+		height: 1rem;
+	}
+
 	/* Stats Header Card */
 	.stats-card {
-		background: var(--color-bg);
+		background: var(--color-card-bg);
 		border: 1px solid var(--color-border);
 		border-radius: 0.75rem;
 		padding: 1.25rem 1.5rem;
@@ -712,7 +742,7 @@
 		justify-content: center;
 		gap: 0.5rem;
 		padding: 0.625rem 1.25rem;
-		background: var(--color-bg);
+		background: var(--color-card-bg);
 		border: 1px solid var(--color-border);
 		border-radius: 2rem;
 		font-family: var(--font-sans);
@@ -750,7 +780,7 @@
 	}
 
 	.time-block {
-		background: var(--color-bg);
+		background: var(--color-card-bg);
 		border: 1px solid var(--color-border);
 		border-radius: 0.5rem;
 		padding: 1rem;
@@ -807,7 +837,7 @@
 	}
 
 	.month-card {
-		background: var(--color-bg);
+		background: var(--color-card-bg);
 		border: 1px solid var(--color-border);
 		border-radius: 0.375rem;
 		padding: 0.5rem;
@@ -955,7 +985,7 @@
 	}
 
 	.week-day-card {
-		background: var(--color-bg);
+		background: var(--color-card-bg);
 		border: 1px solid var(--color-border);
 		border-radius: 0.5rem;
 		padding: 1rem 1.25rem;
@@ -1048,7 +1078,7 @@
 	}
 
 	.hour-card {
-		background: var(--color-bg);
+		background: var(--color-card-bg);
 		border: 1px solid var(--color-border);
 		border-radius: 0.375rem;
 		padding: 0.75rem 0.5rem;
@@ -1120,7 +1150,7 @@
 		justify-content: center;
 		font-size: 0.5rem;
 		color: var(--color-muted);
-		background: var(--color-bg);
+		background: var(--color-card-bg);
 		border: 1px solid var(--color-border);
 		border-radius: 2px;
 		font-family: var(--font-sans);
