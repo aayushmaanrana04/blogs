@@ -151,3 +151,170 @@ a:hover {
 html.dark ::selection {
     background-color: rgba(255, 255, 255, 0.1);
 }
+
+/* Theme wipe animation */
+.theme-wipe-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.theme-wipe-clone {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    right: 0.5rem;
+    bottom: 0.5rem;
+    margin: 0 !important;
+    animation: wipe-shrink 800ms cubic-bezier(0.7, 0, 0.84, 0) forwards;
+}
+
+@media (min-width: 640px) {
+    .theme-wipe-clone {
+        top: 1.25rem;
+        left: 1.25rem;
+        right: 1.25rem;
+        bottom: 1.25rem;
+    }
+}
+
+/* Force light theme colors on clone */
+.theme-wipe-clone.light-themed {
+    --color-card-bg: #f8f8f5;
+    --color-text: #1a1a1a;
+    --color-text-secondary: #4a4a4a;
+    --color-muted: #6b6b6b;
+    --color-border: #e5e5e5;
+    --color-tag-border: #d0d0d0;
+    --color-tag-text: #4a4a4a;
+    background-color: #f8f8f5 !important;
+    color: #1a1a1a !important;
+}
+
+/* Force dark theme colors on clone */
+.theme-wipe-clone.dark-themed {
+    --color-card-bg: #242424;
+    --color-text: #e5e5e5;
+    --color-text-secondary: #b0b0b0;
+    --color-muted: #888888;
+    --color-border: #333333;
+    --color-tag-border: #444444;
+    --color-tag-text: #999999;
+    background-color: #242424 !important;
+    color: #e5e5e5 !important;
+}
+
+/* Main line */
+.theme-wipe-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 4px;
+    top: 0;
+    background: currentColor;
+    animation: line-move 800ms cubic-bezier(0.7, 0, 0.84, 0) forwards;
+    z-index: 10;
+}
+
+/* Dot matrix dither pattern - dense */
+.theme-wipe-line::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 24px;
+    background-image: radial-gradient(circle, currentColor 1.5px, transparent 1.5px);
+    background-size: 6px 6px;
+    background-position: 0 0;
+    animation: dither-emerge-1 150ms ease-out forwards;
+}
+
+/* Dot matrix dither pattern - medium */
+.theme-wipe-line::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 30px;
+    background-image: radial-gradient(circle, currentColor 1px, transparent 1px);
+    background-size: 10px 10px;
+    background-position: 0 0;
+    animation: dither-emerge-2 200ms ease-out forwards;
+}
+
+@keyframes dither-emerge-1 {
+    0% {
+        top: 0;
+    }
+    100% {
+        top: 8px;
+    }
+}
+
+@keyframes dither-emerge-2 {
+    0% {
+        top: 0;
+    }
+    100% {
+        top: 36px;
+    }
+}
+
+/* Dot matrix dither pattern - sparse */
+.theme-wipe-sparse {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 36px;
+    background-image: radial-gradient(circle, currentColor 0.5px, transparent 0.5px);
+    background-size: 14px 14px;
+    background-position: 0 0;
+    animation: dither-emerge-3 250ms ease-out forwards;
+}
+
+@keyframes dither-emerge-3 {
+    0% {
+        top: 0;
+    }
+    100% {
+        top: 62px;
+    }
+}
+
+/* Line colors */
+.theme-wipe-line.to-dark,
+.theme-wipe-line.to-dark::before,
+.theme-wipe-line.to-dark::after,
+.theme-wipe-line.to-dark .theme-wipe-sparse {
+    color: #242424 !important;
+}
+
+.theme-wipe-line:not(.to-dark),
+.theme-wipe-line:not(.to-dark)::before,
+.theme-wipe-line:not(.to-dark)::after,
+.theme-wipe-line:not(.to-dark) .theme-wipe-sparse {
+    color: #f8f8f5 !important;
+}
+
+@keyframes wipe-shrink {
+    0% {
+        clip-path: inset(0 0 0 0);
+    }
+    100% {
+        clip-path: inset(100% 0 0 0);
+    }
+}
+
+@keyframes line-move {
+    0% {
+        top: 0;
+    }
+    100% {
+        top: 100%;
+    }
+}
