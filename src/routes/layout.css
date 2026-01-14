@@ -206,51 +206,78 @@ html.dark ::selection {
     color: #e5e5e5 !important;
 }
 
+/* Main line */
 .theme-wipe-line {
     position: absolute;
     left: 0;
     right: 0;
-    height: 20px;
+    height: 4px;
     top: 0;
     background: currentColor;
     animation: line-move 800ms cubic-bezier(0.7, 0, 0.84, 0) forwards;
     z-index: 10;
 }
 
-/* Second line - 12px */
+/* Dot matrix dither pattern - dense */
 .theme-wipe-line::before {
     content: '';
     position: absolute;
     left: 0;
     right: 0;
     top: 0;
-    height: 12px;
-    background: currentColor;
-    animation: line-emerge-1 150ms ease-out forwards;
+    height: 24px;
+    background-image: radial-gradient(circle, currentColor 1.5px, transparent 1.5px);
+    background-size: 6px 6px;
+    background-position: 0 0;
+    animation: dither-emerge-1 150ms ease-out forwards;
 }
 
-/* Third line - 5px */
+/* Dot matrix dither pattern - medium */
 .theme-wipe-line::after {
     content: '';
     position: absolute;
     left: 0;
     right: 0;
     top: 0;
-    height: 5px;
-    background: currentColor;
-    animation: line-emerge-2 200ms ease-out forwards;
+    height: 30px;
+    background-image: radial-gradient(circle, currentColor 1px, transparent 1px);
+    background-size: 10px 10px;
+    background-position: 0 0;
+    animation: dither-emerge-2 200ms ease-out forwards;
 }
 
-@keyframes line-emerge-1 {
+@keyframes dither-emerge-1 {
     0% {
         top: 0;
     }
     100% {
-        top: 35px;
+        top: 8px;
     }
 }
 
-@keyframes line-emerge-2 {
+@keyframes dither-emerge-2 {
+    0% {
+        top: 0;
+    }
+    100% {
+        top: 36px;
+    }
+}
+
+/* Dot matrix dither pattern - sparse */
+.theme-wipe-sparse {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 36px;
+    background-image: radial-gradient(circle, currentColor 0.5px, transparent 0.5px);
+    background-size: 14px 14px;
+    background-position: 0 0;
+    animation: dither-emerge-3 250ms ease-out forwards;
+}
+
+@keyframes dither-emerge-3 {
     0% {
         top: 0;
     }
@@ -262,16 +289,16 @@ html.dark ::selection {
 /* Line colors */
 .theme-wipe-line.to-dark,
 .theme-wipe-line.to-dark::before,
-.theme-wipe-line.to-dark::after {
+.theme-wipe-line.to-dark::after,
+.theme-wipe-line.to-dark .theme-wipe-sparse {
     color: #242424 !important;
-    background-color: #242424 !important;
 }
 
 .theme-wipe-line:not(.to-dark),
 .theme-wipe-line:not(.to-dark)::before,
-.theme-wipe-line:not(.to-dark)::after {
+.theme-wipe-line:not(.to-dark)::after,
+.theme-wipe-line:not(.to-dark) .theme-wipe-sparse {
     color: #f8f8f5 !important;
-    background-color: #f8f8f5 !important;
 }
 
 @keyframes wipe-shrink {

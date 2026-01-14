@@ -62,6 +62,12 @@
         if (newIsDark) {
             line.classList.add('to-dark');
         }
+
+        // Add sparse dither layer
+        const sparseDither = document.createElement('div');
+        sparseDither.className = 'theme-wipe-sparse';
+        line.appendChild(sparseDither);
+
         clone.appendChild(line);
 
         // Create overlay
