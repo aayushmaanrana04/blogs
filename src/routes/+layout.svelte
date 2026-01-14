@@ -47,6 +47,10 @@
         const newIsDark = !isDark;
         const mainContainer = document.querySelector('.main-container') as HTMLElement;
 
+        // Get scroll position of main content before cloning
+        const mainContent = mainContainer.querySelector('main') as HTMLElement;
+        const scrollTop = mainContent?.scrollTop || 0;
+
         // Clone the current content with current theme
         const clone = mainContainer.cloneNode(true) as HTMLElement;
         clone.classList.add('theme-wipe-clone');
@@ -75,6 +79,14 @@
         overlay.className = 'theme-wipe-overlay';
         overlay.appendChild(clone);
         document.body.appendChild(overlay);
+
+        // Sync scroll position after clone is in DOM
+        requestAnimationFrame(() => {
+            const clonedMain = clone.querySelector('main') as HTMLElement;
+            if (clonedMain) {
+                clonedMain.scrollTop = scrollTop;
+            }
+        });
 
         // Apply new theme immediately (will show through as clone shrinks)
         isDark = newIsDark;
@@ -108,7 +120,7 @@
 
 
 <div
-    class="main-container min-h-[calc(100dvh-1rem)] sm:min-h-[calc(100dvh-2.5rem)] flex flex-col bg-card-bg text-text m-2 sm:m-5 rounded-xl overflow-hidden"
+    class="main-container h-[calc(100dvh-1rem)] sm:h-[calc(100dvh-2.5rem)] flex flex-col bg-card-bg text-text m-2 sm:m-5 rounded-xl overflow-hidden"
 >
     <header
         class="w-full px-4 sm:px-6 border-b border-bg border-double flex-shrink-0"
