@@ -4,6 +4,7 @@
 
     let { children, data } = $props();
     let isDark = $state(false);
+    let isAnimating = $state(false);
 
     function formatCurrentDate(): string {
         const now = new Date();
@@ -40,14 +41,50 @@
     }
 
     function toggleTheme() {
-        isDark = !isDark;
+        if (isAnimating) return;
+        isAnimating = true;
+
+        const newIsDark = !isDark;
+        const mainContainer = document.querySelector('.main-container') as HTMLElement;
+
+        // Clone the current content with current theme
+        const clone = mainContainer.cloneNode(true) as HTMLElement;
+        clone.classList.add('theme-wipe-clone');
         if (isDark) {
+            clone.classList.add('dark-themed');
+        } else {
+            clone.classList.add('light-themed');
+        }
+
+        // Create line inside clone so it respects rounded borders
+        const line = document.createElement('div');
+        line.className = 'theme-wipe-line';
+        if (newIsDark) {
+            line.classList.add('to-dark');
+        }
+        clone.appendChild(line);
+
+        // Create overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'theme-wipe-overlay';
+        overlay.appendChild(clone);
+        document.body.appendChild(overlay);
+
+        // Apply new theme immediately (will show through as clone shrinks)
+        isDark = newIsDark;
+        if (newIsDark) {
             document.documentElement.classList.add("dark");
             localStorage.setItem("theme", "dark");
         } else {
             document.documentElement.classList.remove("dark");
             localStorage.setItem("theme", "light");
         }
+
+        // Clean up after animation
+        setTimeout(() => {
+            overlay.remove();
+            isAnimating = false;
+        }, 800);
     }
 
     onMount(() => {
@@ -65,7 +102,7 @@
 
 
 <div
-    class="min-h-[calc(100dvh-1rem)] sm:min-h-[calc(100dvh-2.5rem)] flex flex-col bg-card-bg text-text m-2 sm:m-5 rounded-xl overflow-hidden"
+    class="main-container min-h-[calc(100dvh-1rem)] sm:min-h-[calc(100dvh-2.5rem)] flex flex-col bg-card-bg text-text m-2 sm:m-5 rounded-xl overflow-hidden"
 >
     <header
         class="w-full px-4 sm:px-6 border-b border-bg border-double flex-shrink-0"
@@ -201,3 +238,4 @@
         </div>
     </main>
 </div>
+
