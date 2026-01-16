@@ -42,6 +42,9 @@
             "url": `${$page.url.origin}/${blog.slug}`
         }))
     });
+
+    // Track loaded images
+    let loadedImages: Record<string, boolean> = $state({});
 </script>
 
 <svelte:head>
@@ -74,31 +77,44 @@
 <section>
     {#each data.blogs as blog}
         <article class="py-6 sm:py-8 border-b border-border">
-            <a href="/{blog.slug}" class="block no-underline group">
+            {#if blog.category === "post"}
+                <!-- Post type: image-focused, not clickable -->
                 <div class="article-meta mb-2 sm:mb-3 flex-wrap">
-                    <span class="category-tag">{blog.category}</span>
-                    <span class="separator hidden sm:inline">·</span>
-                    <span class="hidden sm:inline">{formatDate(blog.date)}</span
-                    >
-                    <span class="separator hidden sm:inline">·</span>
-                    <span class="hidden sm:inline"
-                        >{blog.readTime} MIN READ</span
-                    >
+                    <span class="hidden sm:inline">{formatDate(blog.date)}</span>
                 </div>
 
-                <h2
-                    class="text-xl sm:text-2xl md:text-3xl font-semibold m-0 mb-2 sm:mb-3 leading-tight"
-                    style="font-family: var(--font-sans);"
-                >
-                    {blog.title}
-                </h2>
+                {#if blog.title}
+                    <h2
+                        class="text-xl sm:text-2xl md:text-3xl font-semibold m-0 mb-2 sm:mb-3 leading-tight"
+                        style="font-family: var(--font-sans);"
+                    >
+                        {blog.title}
+                    </h2>
+                {/if}
 
-                <p
-                    class="m-0 text-text-secondary leading-relaxed text-sm sm:text-base line-clamp-3 sm:line-clamp-none"
-                    style="font-family: var(--font-serif);"
-                >
-                    {blog.excerpt}
-                </p>
+                {#if blog.excerpt}
+                    <p
+                        class="m-0 text-text-secondary leading-relaxed text-sm sm:text-base line-clamp-3 sm:line-clamp-none"
+                        style="font-family: var(--font-serif);"
+                    >
+                        {blog.excerpt}
+                    </p>
+                {/if}
+
+                {#if blog.image}
+                    <div class="mt-3 sm:mt-4 rounded-2xl overflow-hidden border border-border relative aspect-video">
+                        {#if !loadedImages[blog.slug]}
+                            <div class="absolute inset-0 bg-border animate-pulse"></div>
+                        {/if}
+                        <img
+                            src={blog.image}
+                            alt={blog.title || "Post image"}
+                            loading="lazy"
+                            onload={() => loadedImages[blog.slug] = true}
+                            class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-out {loadedImages[blog.slug] ? 'opacity-100' : 'opacity-0'}"
+                        />
+                    </div>
+                {/if}
 
                 <div
                     class="mt-3 sm:mt-4 text-xs sm:text-sm text-muted font-sans flex flex-wrap items-center gap-2 sm:gap-0"
@@ -110,7 +126,60 @@
                         >· {formatDate(blog.date)}</span
                     >
                 </div>
-            </a>
+            {:else}
+                <!-- Regular blog: clickable -->
+                <a href="/{blog.slug}" class="block no-underline group">
+                    <div class="article-meta mb-2 sm:mb-3 flex-wrap">
+                        <span class="category-tag">{blog.category}</span>
+                        <span class="separator hidden sm:inline">·</span>
+                        <span class="hidden sm:inline">{formatDate(blog.date)}</span>
+                        {#if blog.readTime}
+                            <span class="separator hidden sm:inline">·</span>
+                            <span class="hidden sm:inline">{blog.readTime} MIN READ</span>
+                        {/if}
+                    </div>
+
+                    <h2
+                        class="text-xl sm:text-2xl md:text-3xl font-semibold m-0 mb-2 sm:mb-3 leading-tight"
+                        style="font-family: var(--font-sans);"
+                    >
+                        {blog.title}
+                    </h2>
+
+                    <p
+                        class="m-0 text-text-secondary leading-relaxed text-sm sm:text-base line-clamp-3 sm:line-clamp-none"
+                        style="font-family: var(--font-serif);"
+                    >
+                        {blog.excerpt}
+                    </p>
+
+                    {#if blog.image}
+                        <div class="mt-3 sm:mt-4 rounded-2xl overflow-hidden border border-border relative aspect-video">
+                            {#if !loadedImages[blog.slug]}
+                                <div class="absolute inset-0 bg-border animate-pulse"></div>
+                            {/if}
+                            <img
+                                src={blog.image}
+                                alt={blog.title}
+                                loading="lazy"
+                                onload={() => loadedImages[blog.slug] = true}
+                                class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-out {loadedImages[blog.slug] ? 'opacity-100' : 'opacity-0'}"
+                            />
+                        </div>
+                    {/if}
+
+                    <div
+                        class="mt-3 sm:mt-4 text-xs sm:text-sm text-muted font-sans flex flex-wrap items-center gap-2 sm:gap-0"
+                    >
+                        <span class="border-l-2 border-muted pl-3"
+                            >BY {blog.author.toUpperCase()}</span
+                        >
+                        <span class="sm:hidden text-muted"
+                            >· {formatDate(blog.date)}</span
+                        >
+                    </div>
+                </a>
+            {/if}
         </article>
     {/each}
 </section>

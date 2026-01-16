@@ -5,19 +5,21 @@ import {
   GITHUB_CONTENT_PATH,
   GITHUB_TOKEN,
 } from "$env/static/private";
+import { dev } from "$app/environment";
 import { getCached, setCache } from "./cache";
 
 const CONTENT_PATH = GITHUB_CONTENT_PATH || "";
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 export interface BlogFrontmatter {
-  title: string;
-  excerpt: string;
+  title?: string;
+  excerpt?: string;
   date: string;
   category: string;
   author: string;
-  readTime: number;
+  readTime?: number;
   public: boolean;
+  image?: string;
 }
 
 /**
@@ -229,13 +231,14 @@ export async function fetchBlog(
 interface BlogJsonEntry {
   filename: string;
   path: string;
-  title: string;
-  excerpt: string;
+  title?: string;
+  excerpt?: string;
   date: string;
   category: string;
   author: string;
-  readTime: number;
+  readTime?: number;
   public: boolean;
+  image?: string;
 }
 
 /**
@@ -266,6 +269,7 @@ export async function fetchAllBlogSummaries(
     author: entry.author,
     readTime: entry.readTime,
     public: entry.public,
+    image: entry.image,
   }));
 
   // Sort by date descending
@@ -279,10 +283,12 @@ export async function fetchAllBlogSummaries(
 
 /**
  * Fetch all public blog summaries (for homepage display)
+ * In dev mode, returns all blogs including private ones
  */
 export async function fetchPublicBlogSummaries(
   fetch: typeof globalThis.fetch,
 ): Promise<BlogSummary[]> {
   const summaries = await fetchAllBlogSummaries(fetch);
+  if (dev) return summaries;
   return summaries.filter((blog) => blog.public === true);
 }
